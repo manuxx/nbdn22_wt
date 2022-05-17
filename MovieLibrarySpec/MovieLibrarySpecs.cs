@@ -78,7 +78,6 @@ namespace TrainingPrep.specs
             };
         }
 
-        [Ignore("Will be implemented next")]
         [Subject(typeof(MovieLibrary))]
         public class when_adding_an_existing_movie_in_the_collection_again : movie_library_concern
         {
@@ -97,7 +96,6 @@ namespace TrainingPrep.specs
                 subject.all_movies().CountAll().ShouldEqual(1);
         }
 
-        [Ignore("Will be implemented next")]
         [Subject(typeof(MovieLibrary))]
         public class when_adding_two_different_copies_of_the_same_movie : movie_library_concern
         {
