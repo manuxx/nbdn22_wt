@@ -3,7 +3,7 @@ using TrainingPrep.collections;
 
 public static class EnumerableExtensions
 {
-    public static IEnumerable<T> OneAtATime<T>(this IEnumerable<T> colection)
+    public static IEnumerable<TItem> OneAtATime<TItem>(this IEnumerable<TItem> colection)
     {
         foreach (var item in colection)
         {
