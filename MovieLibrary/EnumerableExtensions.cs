@@ -14,16 +14,10 @@ public static class EnumerableExtensions
 
     public static IEnumerable<TItem> ThatSatisfy<TItem>(this IEnumerable<TItem> items, Predicate<TItem> condition)
     {
-        foreach (var item in items)
-        {
-            if (condition(item))
-            {
-                yield return item;
-            }
-        }
+        return items.ThatSatisfy(new AnonymousCriteria<TItem>(condition));
     }
 
-    public static IEnumerable<TItem> ThatSatisfy<TItem>(this IEnumerable<TItem> items, Criteria<TItem> criteria)
+    public static IEnumerable<TItem> ThatSatisfy<TItem>(this IEnumerable<TItem> items, ICriteria<TItem> criteria)
     {
         foreach (var item in items)
         {
@@ -33,9 +27,4 @@ public static class EnumerableExtensions
             }
         }
     }
-}
-
-public interface Criteria<TItem>
-{
-    bool IsSatisfiedBy(TItem item);
 }

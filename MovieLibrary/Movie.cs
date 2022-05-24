@@ -41,7 +41,7 @@ namespace TrainingPrep.collections
         public int rating { get; set; }
         public DateTime date_published { get; set; }
 
-        public static Criteria<Movie> IsPublishedBy(ProductionStudio productionStudio)
+        public static ICriteria<Movie> IsPublishedBy(ProductionStudio productionStudio)
         {
             return new PublishedCriteria(productionStudio);
         }
@@ -73,16 +73,19 @@ namespace TrainingPrep.collections
 
     }
 
-    public class PublishedCriteria : Criteria<Movie>
+    public class PublishedCriteria : ICriteria<Movie>
     {
+        private readonly ProductionStudio _productionStudio;
+
         public PublishedCriteria(ProductionStudio productionStudio)
         {
-            throw new NotImplementedException();
+            _productionStudio = productionStudio;
         }
 
-        public bool IsSatisfiedBy(Movie item)
+        public bool IsSatisfiedBy(Movie movie)
         {
-            throw new NotImplementedException();
+            return movie.production_studio == _productionStudio;
+
         }
     }
 }
