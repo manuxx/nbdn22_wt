@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace TrainingPrep.collections
 {
@@ -39,5 +40,36 @@ namespace TrainingPrep.collections
         public Genre genre { get; set; }
         public int rating { get; set; }
         public DateTime date_published { get; set; }
+
+        public static Predicate<Movie> IsPublishedBy(ProductionStudio productionStudio)
+        {
+            return movie => movie.production_studio == productionStudio;
+        }
+
+        public static Predicate<Movie> IsOfGenre(Genre genre)
+        {
+            return movie => movie.genre == genre;
+        }
+
+        public static Predicate<Movie> IsPublishedAfter(int year)
+        {
+            return movie => movie.date_published.Year > year;
+        }
+
+        public static Predicate<Movie> IsPublishedBetween(int yearFrom, int YearTo)
+        {
+            return movie => movie.date_published.Year >= yearFrom && movie.date_published.Year <= YearTo;
+        }
+
+        public static Predicate<Movie> IsNotPublishedBy(ProductionStudio productionStudio)
+        {
+            return movie => movie.production_studio != productionStudio;
+        }
+
+        public static Predicate<Movie> IsAnyOfGenre(params Genre[] genres)
+        {
+            return movie => ((IList)genres).Contains(movie.genre);
+        }
+
     }
 }
