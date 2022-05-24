@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace TrainingPrep.collections
 {
@@ -46,19 +47,15 @@ namespace TrainingPrep.collections
             return new PublishedCriteria(productionStudio);
         }
 
-        public static Predicate<Movie> IsOfGenre(Genre genre)
+
+        public static ICriteria<Movie> IsPublishedAfter(int year)
         {
-            return movie => movie.genre == genre;
+            return new PublishedAfterCriteria(year);
         }
 
-        public static Predicate<Movie> IsPublishedAfter(int year)
+        public static ICriteria<Movie> IsPublishedBetween(int yearFrom, int YearTo)
         {
-            return movie => movie.date_published.Year > year;
-        }
-
-        public static Predicate<Movie> IsPublishedBetween(int yearFrom, int YearTo)
-        {
-            return movie => movie.date_published.Year >= yearFrom && movie.date_published.Year <= YearTo;
+            return new PublishedBetweenCriteria(yearFrom,YearTo);
         }
 
         public static Predicate<Movie> IsNotPublishedBy(ProductionStudio productionStudio)
@@ -66,11 +63,58 @@ namespace TrainingPrep.collections
             return movie => movie.production_studio != productionStudio;
         }
 
-        public static Predicate<Movie> IsAnyOfGenre(params Genre[] genres)
+        public static ICriteria<Movie> IsAnyOfGenre(params Genre[] genres)
         {
-            return movie => ((IList)genres).Contains(movie.genre);
+            return new GenreCriteria(genres);
         }
 
+    }
+
+    public class GenreCriteria : ICriteria<Movie>
+    {
+        private readonly Genre[] _genres;
+
+        public GenreCriteria(Genre[] genres)
+        {
+            _genres = genres;
+        }
+
+        public bool IsSatisfiedBy(Movie movie)
+        {
+            return ((IList)_genres).Contains(movie.genre);
+        }
+    }
+
+    public class PublishedBetweenCriteria : ICriteria<Movie>
+    {
+        private readonly int _yearFrom;
+        private readonly int _yearTo;
+
+        public PublishedBetweenCriteria(int yearFrom, int yearTo)
+        {
+            _yearFrom = yearFrom;
+            _yearTo = yearTo;
+        }
+
+        public bool IsSatisfiedBy(Movie item)
+        {
+            return item.date_published.Year >= _yearFrom && item.date_published.Year <= _yearTo;
+        }
+    }
+
+    public class PublishedAfterCriteria : ICriteria<Movie>
+    {
+        private readonly int _year;
+
+        public PublishedAfterCriteria(int year)
+        {
+            _year = year;
+        }
+
+        public bool IsSatisfiedBy(Movie movie)
+        {
+            return movie.date_published.Year > _year;
+        }
     }
 
     public class PublishedCriteria : ICriteria<Movie>
