@@ -41,9 +41,9 @@ namespace TrainingPrep.collections
         public int rating { get; set; }
         public DateTime date_published { get; set; }
 
-        public static Predicate<Movie> IsPublishedBy(ProductionStudio productionStudio)
+        public static Criteria<Movie> IsPublishedBy(ProductionStudio productionStudio)
         {
-            return movie => movie.production_studio == productionStudio;
+            return new PublishedCriteria(productionStudio);
         }
 
         public static Predicate<Movie> IsOfGenre(Genre genre)
@@ -71,5 +71,18 @@ namespace TrainingPrep.collections
             return movie => ((IList)genres).Contains(movie.genre);
         }
 
+    }
+
+    public class PublishedCriteria : Criteria<Movie>
+    {
+        public PublishedCriteria(ProductionStudio productionStudio)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsSatisfiedBy<TItem>(TItem item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
