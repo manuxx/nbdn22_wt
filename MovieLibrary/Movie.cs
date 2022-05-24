@@ -80,7 +80,7 @@ namespace TrainingPrep.collections
             throw new NotImplementedException();
         }
 
-        public bool IsSatisfiedBy<TItem>(TItem item)
+        public bool IsSatisfiedBy(Movie item)
         {
             throw new NotImplementedException();
         }
