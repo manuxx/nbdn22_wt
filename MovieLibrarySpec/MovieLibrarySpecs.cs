@@ -187,16 +187,18 @@ namespace TrainingPrep.specs
                 results.ShouldContainOnly(a_bugs_life, shrek, cars);
             };
 
-            It should_be_able_to_find_all_action_movies = () =>
+            private It should_be_able_to_find_all_action_movies = () =>
             {
-                var results = subject.all_action_movies();
+                var criteria = Where<Movie>.HasAn(m => m.genre).EqualTo(Genre.action);
+                var results = subject.all_movies().ThatSatisfy(criteria);
 
                 results.ShouldContainOnly(indiana_jones_and_the_temple_of_doom, pirates_of_the_carribean);
             };
 
-            It should_be_able_to_find_all_movies_published_after_a_certain_year = () =>
+            private It should_be_able_to_find_all_movies_published_after_a_certain_year = () =>
             {
-                var results = subject.all_movies_published_after(2004);
+                var criteria = Where<Movie>.HasAn(m => m.date_published.Year).GreaterThan(2004);
+                var results = subject.all_movies().ThatSatisfy(criteria);
 
                 results.ShouldContainOnly(the_ring, shrek, theres_something_about_mary);
             };
