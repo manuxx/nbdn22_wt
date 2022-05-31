@@ -340,3 +340,29 @@ namespace TrainingPrep.specs
 
     }
 }
+
+namespace TrainingPrep.specs.MovieLibrarySpecs
+{
+    internal class Where_Movie  
+    {
+        public static Cos HasAn(Func<Movie, ProductionStudio> selector)
+        {
+            return new Cos(selector);
+        }
+    }
+
+    internal class Cos
+    {
+        private readonly Func<Movie, ProductionStudio> _selector;
+
+        public Cos(Func<Movie, ProductionStudio> selector)
+        {
+            _selector = selector;
+        }
+
+        public ICriteria<Movie> EqualTo(ProductionStudio studio)
+        {
+            return new AnonymousCriteria<Movie>(movie => _selector(movie).Equals(studio));
+        }
+    }
+}
