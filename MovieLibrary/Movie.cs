@@ -44,7 +44,7 @@ namespace TrainingPrep.collections
 
         public static ICriteria<Movie> IsPublishedBy(ProductionStudio productionStudio)
         {
-            return new PublishedCriteria(productionStudio);
+            return new PublishedByCriteria(productionStudio);
         }
 
 
@@ -58,78 +58,73 @@ namespace TrainingPrep.collections
             return new PublishedBetweenCriteria(yearFrom,YearTo);
         }
 
-        public static Predicate<Movie> IsNotPublishedBy(ProductionStudio productionStudio)
-        {
-            return movie => movie.production_studio != productionStudio;
-        }
-
         public static ICriteria<Movie> IsAnyOfGenre(params Genre[] genres)
         {
             return new GenreCriteria(genres);
         }
-
-    }
-
-    public class GenreCriteria : ICriteria<Movie>
-    {
-        private readonly Genre[] _genres;
-
-        public GenreCriteria(Genre[] genres)
+        public class GenreCriteria : ICriteria<Movie>
         {
-            _genres = genres;
+            private readonly Genre[] _genres;
+
+            public GenreCriteria(Genre[] genres)
+            {
+                _genres = genres;
+            }
+
+            public bool IsSatisfiedBy(Movie movie)
+            {
+                return ((IList)_genres).Contains(movie.genre);
+            }
         }
 
-        public bool IsSatisfiedBy(Movie movie)
+        public class PublishedBetweenCriteria : ICriteria<Movie>
         {
-            return ((IList)_genres).Contains(movie.genre);
-        }
-    }
+            private readonly int _yearFrom;
+            private readonly int _yearTo;
 
-    public class PublishedBetweenCriteria : ICriteria<Movie>
-    {
-        private readonly int _yearFrom;
-        private readonly int _yearTo;
+            public PublishedBetweenCriteria(int yearFrom, int yearTo)
+            {
+                _yearFrom = yearFrom;
+                _yearTo = yearTo;
+            }
 
-        public PublishedBetweenCriteria(int yearFrom, int yearTo)
-        {
-            _yearFrom = yearFrom;
-            _yearTo = yearTo;
-        }
-
-        public bool IsSatisfiedBy(Movie item)
-        {
-            return item.date_published.Year >= _yearFrom && item.date_published.Year <= _yearTo;
-        }
-    }
-
-    public class PublishedAfterCriteria : ICriteria<Movie>
-    {
-        private readonly int _year;
-
-        public PublishedAfterCriteria(int year)
-        {
-            _year = year;
+            public bool IsSatisfiedBy(Movie item)
+            {
+                return item.date_published.Year >= _yearFrom && item.date_published.Year <= _yearTo;
+            }
         }
 
-        public bool IsSatisfiedBy(Movie movie)
+        public class PublishedAfterCriteria : ICriteria<Movie>
         {
-            return movie.date_published.Year > _year;
+            private readonly int _year;
+
+            public PublishedAfterCriteria(int year)
+            {
+                _year = year;
+            }
+
+            public bool IsSatisfiedBy(Movie movie)
+            {
+                return movie.date_published.Year > _year;
+            }
         }
-    }
 
-    public class PublishedCriteria : ICriteria<Movie>
-    {
-        private readonly ProductionStudio _productionStudio;
-
-        public PublishedCriteria(ProductionStudio productionStudio)
+        public class PublishedByCriteria : ICriteria<Movie>
         {
-            _productionStudio = productionStudio;
-        }
+            private readonly ProductionStudio _productionStudio;
 
-        public bool IsSatisfiedBy(Movie movie)
-        {
-            return movie.production_studio == _productionStudio;
+            public PublishedByCriteria(ProductionStudio productionStudio)
+            {
+                _productionStudio = productionStudio;
+            }
 
+            public bool IsSatisfiedBy(Movie movie)
+            {
+                return movie.production_studio == _productionStudio;
+
+            }
         }
     }
+
+    
 }
