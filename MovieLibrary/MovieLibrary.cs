@@ -75,7 +75,7 @@ namespace TrainingPrep.collections
 
         public IEnumerable<Movie> all_kid_movies_published_after(int year)
         {
-            return movies.ThatSatisfy(new Conjunction<Movie>(Movie.IsAnyOfGenre(Genre.kids), Movie.IsPublishedAfter(year)));
+            return movies.ThatSatisfy(Movie.IsAnyOfGenre(Genre.kids).And(Movie.IsPublishedAfter(year)));
                
         }
 
