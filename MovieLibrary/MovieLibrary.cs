@@ -64,7 +64,7 @@ namespace TrainingPrep.collections
 
         public IEnumerable<Movie> all_movies_published_by_pixar_or_disney()
         {
-            return movies.ThatSatisfy(new Alternative(Movie.IsPublishedBy(ProductionStudio.Pixar),
+            return movies.ThatSatisfy(new Alternative<Movie>(Movie.IsPublishedBy(ProductionStudio.Pixar),
                 Movie.IsPublishedBy(ProductionStudio.Disney)));
         }
 
@@ -75,7 +75,8 @@ namespace TrainingPrep.collections
 
         public IEnumerable<Movie> all_kid_movies_published_after(int year)
         {
-            return movies.ThatSatisfy(movie => movie.genre == Genre.kids && movie.date_published.Year > year);
+            return movies.ThatSatisfy(new Conjunction(Movie.IsAnyOfGenre(Genre.kids), Movie.IsPublishedAfter(year)));
+               
         }
 
         public IEnumerable<Movie> all_horror_or_action()
