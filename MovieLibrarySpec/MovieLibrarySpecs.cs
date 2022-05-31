@@ -174,14 +174,15 @@ namespace TrainingPrep.specs
         {
             private It should_be_able_to_find_all_movies_published_by_pixar = () =>
             {
-                ICriteria<Movie> criteria = Where_Movie.HasAn(m => m.production_studio).EqualTo(ProductionStudio.Pixar);
+                ICriteria<Movie> criteria = Where<Movie>.HasAn(m => m.production_studio).EqualTo(ProductionStudio.Pixar);
                 var results = subject.all_movies().ThatSatisfy(criteria);
                 results.ShouldContainOnly(cars, a_bugs_life);
             };
 
-            It should_be_able_to_find_all_kid_movies = () =>
+            private It should_be_able_to_find_all_kid_movies = () =>
             {
-                var results = subject.all_kid_movies();
+                var criteria = Where<Movie>.HasAn(m => m.genre).EqualTo(Genre.kids);
+                var results = subject.all_movies().ThatSatisfy(criteria);
 
                 results.ShouldContainOnly(a_bugs_life, shrek, cars);
             };
@@ -343,26 +344,26 @@ namespace TrainingPrep.specs
 
 namespace TrainingPrep.specs.MovieLibrarySpecs
 {
-    internal class Where_Movie  
+    internal class Where<TItem>  
     {
-        public static Cos HasAn(Func<Movie, ProductionStudio> selector)
+        public static CriteriaBuilder<TItem, TProperty> HasAn<TProperty>(Func<TItem, TProperty> selector)
         {
-            return new Cos(selector);
+            return new CriteriaBuilder<TItem, TProperty>(selector);
         }
     }
 
-    internal class Cos
+    internal class CriteriaBuilder<TItem, TProperty>
     {
-        private readonly Func<Movie, ProductionStudio> _selector;
+        private readonly Func<TItem, TProperty> _selector;
 
-        public Cos(Func<Movie, ProductionStudio> selector)
+        public CriteriaBuilder(Func<TItem, TProperty> selector)
         {
             _selector = selector;
         }
 
-        public ICriteria<Movie> EqualTo(ProductionStudio studio)
+        public ICriteria<TItem> EqualTo(TProperty studio)
         {
-            return new AnonymousCriteria<Movie>(movie => _selector(movie).Equals(studio));
+            return new AnonymousCriteria<TItem>(movie => _selector(movie).Equals(studio));
         }
     }
 }
