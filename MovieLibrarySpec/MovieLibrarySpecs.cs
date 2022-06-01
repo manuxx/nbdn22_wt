@@ -197,10 +197,10 @@ namespace TrainingPrep.specs
 
             private It should_be_able_to_find_all_movies_published_after_a_certain_year = () =>
             {
-                var criteria = Where<Movie>.HasAn(m => m.date_published.Year).GreaterThan(2004);
+                var criteria = Where<Movie>.HasAn(m => m.date_published.Year).Not().EqualTo(2004);
                 var results = subject.all_movies().ThatSatisfy(criteria);
 
-                results.ShouldContainOnly(the_ring, shrek, theres_something_about_mary);
+                results.ShouldContainOnly(indiana_jones_and_the_temple_of_doom, the_ring, shrek, a_bugs_life, theres_something_about_mary, pirates_of_the_carribean);
             };
 
 
@@ -344,28 +344,51 @@ namespace TrainingPrep.specs
     }
 }
 
-namespace TrainingPrep.specs.MovieLibrarySpecs
+
+internal static class Where<TItem>  
 {
-    internal class Where<TItem>  
+    public static CriteriaBuilder<TItem, TProperty> HasAn<TProperty>(Func<TItem, TProperty> selector)
     {
-        public static CriteriaBuilder<TItem, TProperty> HasAn<TProperty>(Func<TItem, TProperty> selector)
-        {
-            return new CriteriaBuilder<TItem, TProperty>(selector);
-        }
+        return new CriteriaBuilder<TItem, TProperty>(selector);
+    }
+}
+
+internal class CriteriaBuilder<TItem, TProperty>
+{
+    private readonly bool _negate = false;
+    public readonly Func<TItem, TProperty> Selector;
+
+    public CriteriaBuilder(Func<TItem, TProperty> selector, bool negate = false)
+    {
+        Selector = selector;
+        _negate = negate;
     }
 
-    internal class CriteriaBuilder<TItem, TProperty>
+    public CriteriaBuilder<TItem, TProperty> Not()
     {
-        private readonly Func<TItem, TProperty> _selector;
+        return new CriteriaBuilder<TItem, TProperty>(this.Selector, true);
+    }
 
-        public CriteriaBuilder(Func<TItem, TProperty> selector)
-        {
-            _selector = selector;
-        }
+    public bool NegateIfNeeded(bool value)
+    {
+        return this._negate ? !value : value;
+    }
+}
 
-        public ICriteria<TItem> EqualTo(TProperty studio)
-        {
-            return new AnonymousCriteria<TItem>(movie => _selector(movie).Equals(studio));
-        }
+internal static class CriteriaExtensions
+{
+    public static ICriteria<TItem> EqualTo<TItem, TProperty>(this CriteriaBuilder<TItem, TProperty> criteriaBuilder, TProperty studio)
+    {
+        return new AnonymousCriteria<TItem>(movie => criteriaBuilder.NegateIfNeeded(criteriaBuilder.Selector(movie).Equals(studio)));
+    }
+
+    public static ICriteria<TItem> GreaterThan<TItem, TProperty>(this CriteriaBuilder<TItem, TProperty> criteriaBuilder, TProperty property) where TProperty : IComparable<TProperty>
+    {
+        return new AnonymousCriteria<TItem>(item => criteriaBuilder.NegateIfNeeded(criteriaBuilder.Selector(item).CompareTo(property) > 0));
+    }
+    
+    public static ICriteria<TItem> Between<TItem, TProperty>(this CriteriaBuilder<TItem, TProperty> criteriaBuilder, TProperty from, TProperty to) where TProperty : IComparable<TProperty>
+    {
+        return new AnonymousCriteria<TItem>(item => criteriaBuilder.NegateIfNeeded(criteriaBuilder.Selector(item).CompareTo(from) > 0 && criteriaBuilder.Selector(item).CompareTo(to) < 0));
     }
 }
